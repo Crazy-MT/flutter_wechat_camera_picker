@@ -1245,15 +1245,10 @@ class CameraPickerState extends State<CameraPicker>
           return const SizedBox.shrink();
         }
         Widget backButton = buildBackButton(context);
-        Widget flashModeSwitch = buildFlashModeSwitch(context, v);
         if (isCameraRotated && !enableScaledPreview) {
           backButton = RotatedBox(
             quarterTurns: cameraQuarterTurns,
             child: backButton,
-          );
-          flashModeSwitch = RotatedBox(
-            quarterTurns: cameraQuarterTurns,
-            child: flashModeSwitch,
           );
         }
         final isPortrait = v.deviceOrientation.toString().contains('portrait');
@@ -1264,7 +1259,7 @@ class CameraPickerState extends State<CameraPicker>
             children: <Widget>[
               if (!v.isRecordingVideo) backButton,
               const Spacer(),
-              flashModeSwitch,
+              Text('历史记录'),
             ],
           ),
         );
@@ -1407,7 +1402,31 @@ class CameraPickerState extends State<CameraPicker>
             Expanded(
               child: RotatedBox(
                 quarterTurns: !enableScaledPreview ? cameraQuarterTurns : 0,
-                child: buildCameraSwitch(context),
+                child: buildInitializeWrapper(
+                  builder: (CameraValue v, __) {
+                    if (v.isRecordingVideo) {
+                      return const SizedBox.shrink();
+                    }
+                    Widget flashModeSwitch = buildFlashModeSwitch(context, v);
+                    if (isCameraRotated && !enableScaledPreview) {
+                      flashModeSwitch = RotatedBox(
+                        quarterTurns: cameraQuarterTurns,
+                        child: flashModeSwitch,
+                      );
+                    }
+                    final isPortrait = v.deviceOrientation.toString().contains('portrait');
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Flex(
+                        direction: isPortrait ? Axis.horizontal : Axis.vertical,
+                        children: <Widget>[
+                          const Spacer(),
+                          flashModeSwitch,
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             )
           else
